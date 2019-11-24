@@ -1,0 +1,51 @@
+name: Push
+
+on:
+  push:
+    branches:
+      - master
+    tags:
+      - '[0-9]+.[0-9]+.[0-9]+'
+      - '[0-9]+.[0-9]+.[0-9]+-*'
+    paths-ignore:
+      - README.md
+
+jobs:
+  push:
+    name: Push a Docker/OCI image
+    env:
+      IMAGE_NAME: awscli
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@master
+      - name: Generate a config.json
+        run: |
+          cat <<JSON > config.json
+          {
+            "auths": {
+              "docker.pkg.github.com": {
+                "auth": "$(echo -n :${{ secrets.GITHUB_TOKEN }} | base64)"
+              }
+            }
+          }
+          JSON
+      - name: Build and push a image
+        run: |
+          tag=${GITHUB_REF##*/}
+
+          if [[ ${tag} == master ]]
+          then
+            tag="latest"
+          fi
+
+          echo "tag: ${tag}"
+
+          docker run \
+            -v $(pwd):/workspace \
+            -v $(pwd)/config.json:/kaniko/.docker/config.json:ro \
+            gcr.io/kaniko-project/executor:latest \
+              --context dir:///workspace/ \
+              --dockerfile Dockerfile \
+              --destination docker.pkg.github.com/${GITHUB_REPOSITORY}/${IMAGE_NAME}:${tag} \
+              --cache=true \
+              --cache-repo docker.pkg.github.com/${GITHUB_REPOSITORY}/${IMAGE_NAME}-cache \
