@@ -48,4 +48,4 @@ jobs:
               --dockerfile Dockerfile \
               --destination docker.pkg.github.com/${GITHUB_REPOSITORY}/${IMAGE_NAME}:${tag} \
               --cache=true \
-              --cache-repo docker.pkg.github.com/${GITHUB_REPOSITORY}/${IMAGE_NAME}-cache \
+              --cache-repo docker.pkg.github.com/${GITHUB_REPOSITORY}/${IMAGE_NAME}-cache
