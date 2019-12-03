@@ -26,7 +26,7 @@ jobs:
             }
           }
           JSON
-      - name: Build a image
+      - name: Build an image
         run: |
           docker run \
             -v $(pwd):/workspace \

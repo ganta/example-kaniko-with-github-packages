@@ -29,7 +29,7 @@ jobs:
             }
           }
           JSON
-      - name: Build and push a image
+      - name: Build and push an image
         run: |
           tag=${GITHUB_REF##*/}
 
